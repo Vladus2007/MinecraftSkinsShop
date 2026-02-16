@@ -1,0 +1,4 @@
+*.sh text eol=lf
+Dockerfile text eol=lf
+frontend/nginx/default.conf text eol=lf
+MinecraftSkinsWebApi/Presentation/wait-for-postgres.sh text eol=lf
