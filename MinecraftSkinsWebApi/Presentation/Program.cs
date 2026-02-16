@@ -1,0 +1,124 @@
+using Application.Services.Interfaces;
+using Infrastructure.BTCConnection;
+using Application.Services;
+using Microsoft.Extensions.Caching.Memory;
+using Infrastructure.Repositories;
+using Domain.Repositories;
+using Infrastructure.Persistence;
+using Infrastructure.SeedData;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.InMemory;
+using SQLitePCL;
+using System.Security.Authentication;
+using Infrastructure.Handlers;
+using Microsoft.AspNetCore.Authentication;
+
+var builder = WebApplication.CreateBuilder(args);
+
+// Initialize SQLite native provider (safe to call even if not using SQLite)
+Batteries.Init();
+
+// Add services to the container.
+
+builder.Services.AddControllers();
+builder.Services.AddMemoryCache();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", policy =>
+    {
+        policy.AllowAnyOrigin() // В проде лучше указать конкретный домен
+              .AllowAnyMethod()
+              .AllowAnyHeader();
+    });
+});
+// HttpClient для BTCConnection. api url храните в конфиге (appsettings.json)
+var btcApiUrl = builder.Configuration.GetValue<string>("BtcApi:Url") ?? "https://rest.coinapi.io/v1/exchangerate/BTC/USD?apikey=5528c02e-055c-45c1-ac43-fe57500a6b3b";
+builder.Services.AddAuthentication("MockShceme").
+    AddScheme<AuthenticationSchemeOptions, MockAuthoriseHandler>("MockShceme", null);
+builder.Services.AddAuthorization();
+// Register typed HttpClient and map to IGetRateService so DI provides configured client to BTCConnection
+builder.Services.AddHttpClient<IGetRateService, BTCConnection>(client =>
+{
+    // If the provided URL is absolute, set as BaseAddress; otherwise leave it and BTCConnection will use fallback
+    if (Uri.TryCreate(btcApiUrl, UriKind.Absolute, out var uri))
+    {
+        client.BaseAddress = uri;
+    }
+});
+
+// Configure EF Core with PostgreSQL if connection string provided
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var useNpgsql = !string.IsNullOrEmpty(connectionString) && connectionString.Contains("Host=", StringComparison.OrdinalIgnoreCase);
+
+if (useNpgsql)
+{
+    builder.Services.AddDbContext<AppDbContext>(options =>
+        options.UseNpgsql(connectionString, b => b.MigrationsAssembly("Presentation")));
+}
+else if (!string.IsNullOrEmpty(connectionString))
+{
+    // If a connection string exists but not Postgres, assume SQLite
+    builder.Services.AddDbContext<AppDbContext>(options =>
+        options.UseSqlite(connectionString, b => b.MigrationsAssembly("Presentation")));
+}
+else
+{
+    builder.Services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("SkinsDb"));
+}
+
+// Repositories: use EF implementations that work with AppDbContext
+builder.Services.AddScoped<ISkinRepository, EfSkinRepository>();
+builder.Services.AddScoped<IPurchaseRepository, EfPurchaseRepository>();
+
+// Application services
+builder.Services.AddScoped<ISkinService, SkinService>();
+builder.Services.AddScoped<IPurchaseService, PurchaseService>();
+
+// Price calculator
+builder.Services.AddScoped<IPriceCalculator, PriceCalculator>();
+
+// Current user service and HttpContext accessor
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<Infrastructure.Services.CurrentUserService>();
+
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+var app = builder.Build();
+
+// Apply migrations and seed data only if using Npgsql
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    try
+    {
+        var context = services.GetRequiredService<AppDbContext>();
+        if (useNpgsql)
+        {
+            context.Database.Migrate();
+        }
+        SeedData.Initialize(services);
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Error migrating or seeding the database");
+    }
+}
+
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.UseCors("AllowAll");
+app.MapControllers();
+
+app.Run();

@@ -1,0 +1,56 @@
+﻿using Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
+using System;
+using System.Linq;
+using Domain.Models;
+
+namespace Infrastructure.SeedData
+{
+    public static class SeedData
+    {
+        public static void Initialize(IServiceProvider serviceProvider)
+        {
+            using var scope = serviceProvider.CreateScope();
+            var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+            // Try to detect missing schema and create if needed
+            try
+            {
+                // This will throw if the table doesn't exist on relational DB
+                if (context.Skins.Any() || context.Purchases.Any())
+                {
+                    return;
+                }
+            }
+            catch (Exception)
+            {
+                // Possibly 'no such table' for SQLite or other schema issue - try to create
+                context.Database.EnsureCreated();
+            }
+
+            // Re-check after ensuring created
+            if (context.Skins.Any() || context.Purchases.Any())
+            {
+                return;
+            }
+
+            var skins = new[]
+            {
+                new Skin(1, "Default Skin", 2.50m, true),
+                new Skin(2, "Rare Skin", 10.00m, true)
+            };
+
+            context.Skins.AddRange(skins);
+
+            var purchases = new[]
+            {
+                new Purchase(skins[0].Id, "1", skins[0].BasePriceUsd, 60000m, DateTime.UtcNow)
+            };
+
+            context.Purchases.AddRange(purchases);
+
+            context.SaveChanges();
+        }
+    }
+}

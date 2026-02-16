@@ -1,0 +1,45 @@
+﻿using Domain.Models;
+using Domain.Repositories;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+namespace Infrastructure.Repositories
+{
+    public class PurchaseRepository : IPurchaseRepository
+    {
+        private readonly ConcurrentDictionary<int, Purchase> _store = new();
+        private int _idCounter = 0;
+        private readonly ILogger<PurchaseRepository> _logger;
+        public PurchaseRepository(ILogger<PurchaseRepository> logger)
+        {
+            _logger = logger;
+        }
+
+        public Task<Purchase?> GetPurchaseAsync(int id, CancellationToken cancellationToken)
+        {
+            _store.TryGetValue(id, out var p);
+            return Task.FromResult<Purchase?>(p);
+        }
+
+        public Task<IEnumerable<Purchase>> GetPurchasesByUserAsync(string userId, CancellationToken cancellationToken)
+        {
+            var list = _store.Values.Where(p => p.UserId == userId);
+            return Task.FromResult<IEnumerable<Purchase>>(list);
+        }
+
+        public Task<Purchase> AddAsync(Purchase p, CancellationToken cancellationToken)
+        {
+            var id = Interlocked.Increment(ref _idCounter);
+            p.Id = id;
+            _store[id] = p;
+            return Task.FromResult(p);
+        }
+    }
+}
+
+

@@ -1,0 +1,54 @@
+﻿// Application service: SkinService
+// Responsibility:
+// - Provide methods to list skins and get single skin details
+// - Use IPriceCalculator to compute final prices for presentation
+// - Map domain Skin to SkinResponse DTO
+
+using Application.DTOs;
+using Application.Services.Interfaces;
+using Domain.Repositories;
+
+namespace Application.Services
+{
+    public interface ISkinService
+    {
+        Task<IEnumerable<SkinResponse>> GetAllSkinsAsync(CancellationToken cancellationToken);
+        Task<SkinResponse?> GetSkinByIdAsync(int id, CancellationToken cancellationToken);
+    }
+
+    public class SkinService : ISkinService
+    {
+        private readonly ISkinRepository _skinRepository;
+        private readonly IPriceCalculator _priceCalculator;
+
+        public SkinService(ISkinRepository skinRepository, IPriceCalculator priceCalculator)
+        {
+            _skinRepository = skinRepository;
+            _priceCalculator = priceCalculator;
+        }
+
+        public async Task<IEnumerable<SkinResponse>> GetAllSkinsAsync(CancellationToken cancellationToken)
+        {
+            var skins = await _skinRepository.GetAllSkinsAsync(cancellationToken);
+            var responses = new List<SkinResponse>();
+            foreach (var skin in skins)
+            {
+                var dto = new SkinResponse(skin.Id, skin.Name, skin.BasePriceUsd, 0m, skin.IsAvailable);
+                var finalPrice = await _priceCalculator.CalculateFinalPriceAsync(skin.BasePriceUsd, cancellationToken);
+                var withPrice = dto with { FinalPriceUsd = finalPrice };
+                responses.Add(withPrice);
+            }
+            return responses;
+        }
+
+        public async Task<SkinResponse?> GetSkinByIdAsync(int id, CancellationToken cancellationToken)
+        {
+            var skin = await _skinRepository.GetSkinByIdAsync(id, cancellationToken);
+            if (skin == null) return null;
+
+            var dto = new SkinResponse(skin.Id, skin.Name, skin.BasePriceUsd, 0m, skin.IsAvailable);
+            var finalPrice = await _priceCalculator.CalculateFinalPriceAsync(skin.BasePriceUsd, cancellationToken);
+            return dto with { FinalPriceUsd = finalPrice };
+        }
+    }
+}

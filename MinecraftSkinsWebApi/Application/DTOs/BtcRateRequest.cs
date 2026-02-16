@@ -1,0 +1,36 @@
+﻿// Application DTOs: BtcRateRequest
+// Purpose: Contains data transfer objects representing BTC / crypto API payloads.
+// These classes are used when parsing external API responses and when transporting
+// BTC related data inside the application. Keep these simple POCOs (no logic).
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Text.Json.Serialization;
+using System.Threading.Tasks;
+
+namespace Application.DTOs
+{
+    public class BtcRateRequest
+    {
+        public class TechnicalDto
+        {
+            public double Rsi { get; set; }
+            public string? Signal { get; set; }
+        }
+
+        // Основной DTO для ответа
+        public class CryptoDataDto
+        {
+            public string? Symbol { get; set; }
+            public decimal Price { get; set; }
+            [JsonPropertyName("change_24h")] // Указываем точное имя из JSON
+            public double Change24h { get; set; }
+            [JsonPropertyName("market_cap")]
+            public long MarketCap { get; set; }
+            public long Volume { get; set; }
+            public TechnicalDto? Technical { get; set; }
+        }
+    }
+}

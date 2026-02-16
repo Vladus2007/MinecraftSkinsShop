@@ -1,0 +1,65 @@
+services:
+  # PostgreSQL база данных
+  postgres:
+    image: postgres:15-alpine
+    container_name: project-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: yourdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - app-network
+
+  # .NET Backend API
+  backend:
+    build:
+      context: ./MinecraftSkinsWebApi
+      dockerfile: Presentation/Dockerfile
+    container_name: project-backend
+    restart: unless-stopped
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:80
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=yourdb;Username=postgres;Password=postgres
+      - TZ=Europe/Moscow
+    ports:
+      - "5042:80"
+    depends_on:
+      - postgres  
+    networks:
+      - app-network
+
+  # React Frontend с Nginx
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: project-frontend
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+# Тома для данных
+volumes:
+  postgres_data:
+    name: project-postgres-data
+
+# Сеть для коммуникации между контейнерами
+networks:
+  app-network:
+    driver: bridge

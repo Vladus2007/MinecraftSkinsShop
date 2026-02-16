@@ -1,0 +1,36 @@
+﻿// Application service: PriceCalculator
+// Responsibility:
+// - Calculate final price of a skin in USD using base price and BTC rate.
+// - Uses IGetRateService to obtain current BTC price (in USD per BTC).
+// - Contains basic fallback logic when BTC price cannot be retrieved.
+
+using Application.Services.Interfaces;
+using System.Threading;
+
+namespace Application.Services
+{
+    public class PriceCalculator : IPriceCalculator
+    {
+        private readonly IGetRateService _btcPriceService;
+        public PriceCalculator(IGetRateService btcPriceService) => _btcPriceService = btcPriceService;
+
+        /// <summary>
+        /// Calculate final price based on base USD price and BTC price dynamics.
+        /// Note: This is simple placeholder logic; replace with your real pricing rules.
+        /// </summary>
+        public async Task<decimal> CalculateFinalPriceAsync(decimal basePriceUsd, CancellationToken cancellationToken = default)
+        {
+            decimal btcPrice = await _btcPriceService.GetRateAsync(cancellationToken);
+            if (btcPrice <= 0) // защитная логика при ошибке получения курса
+            {
+                return Math.Round(basePriceUsd, 2);
+            }
+
+            // Формула: FinalPrice = BasePrice * (1 + (BTC - reference) / reference)
+            const decimal referencePrice = 50000m;
+            decimal multiplier = 1 + (btcPrice - referencePrice) / referencePrice;
+            decimal final = basePriceUsd * multiplier;
+            return Math.Round(final, 2); // округление до двух знаков
+        }
+    }
+}

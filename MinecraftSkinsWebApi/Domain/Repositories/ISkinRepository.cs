@@ -1,0 +1,16 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Domain.Models;
+namespace Domain.Repositories
+{
+    public interface ISkinRepository
+    {
+        Task<IEnumerable<Skin>> GetAllSkinsAsync(CancellationToken _token);
+
+        Task<Skin?> GetSkinByIdAsync(int id, CancellationToken _token);
+    }
+}
