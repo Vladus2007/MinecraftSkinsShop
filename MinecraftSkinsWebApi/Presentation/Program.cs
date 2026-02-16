@@ -16,6 +16,7 @@ using Microsoft.EntityFrameworkCore.InMemory;
 using SQLitePCL;
 using System.Security.Authentication;
 using Infrastructure.Handlers;
+using Presentation.Extensions;
 using Microsoft.AspNetCore.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -120,6 +121,10 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+// Centralized exception handler: returns consistent JSON errors and logs exceptions.
+app.UseCustomExceptionHandler();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
