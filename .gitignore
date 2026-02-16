@@ -1,0 +1,86 @@
+# === Visual Studio / Rider / VS Code ===
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+.idea/
+.vscode/
+
+# Build artifacts
+**/bin/
+**/obj/
+publish/
+
+# ASP.NET / .NET
+*.db
+*.db-shm
+*.db-wal
+project.lock.json
+project.assets.json
+*.nupkg
+*.snk
+*.pfx
+*.user
+*.csproj.user
+
+# NuGet
+packages/
+
+# Rider caches
+*.iml
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Node / frontend
+node_modules/
+dist/
+build/
+.parcel-cache/
+.vite/
+
+# Environment / local config files
+.env
+.env.*.local
+appsettings.Development.json
+*.Local.user
+
+# Docker
+**/docker-compose.override.yml
+
+# OS files
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# Test / coverage
+coverage/
+.nyc_output/
+.coverage
+
+# Temporary
+*~
+*.tmp
+*.temp
+
+# Ignore Visual Studio Code workspace storage (allow settings.json)
+.vscode/*
+!/.vscode/settings.json
+
+# Ignore build outputs and object caches under solution folders
+/MinecraftSkinsWebApi/**/bin/
+/MinecraftSkinsWebApi/**/obj/
+/Domain/**/bin/
+/Domain/**/obj/
+/Application/**/bin/
+/Application/**/obj/
+/Infrastructure/**/bin/
+/Infrastructure/**/obj/
+/Presentation/**/bin/
+/Presentation/**/obj/
+
+# End of file
