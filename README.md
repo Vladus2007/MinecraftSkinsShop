@@ -54,13 +54,13 @@ docker compose build --no-cache
 docker compose up -d
 ```
 
-3. Проверить логи бэкенда:
+2. Проверить логи бэкенда:
 
 ```bash
 docker compose logs -f backend
 ```
 
-4. Фронтенд будет доступен на `http://localhost:8080` (в `docker-compose.yaml`), API на `http://localhost:5042`.
+3. Фронтенд будет доступен на `http://localhost:8080` (в `docker-compose.yaml`), API на `http://localhost:5042`.
 
 Если при старте видите ошибку `/usr/bin/env: 'bash\r'` — убедитесь, что в репозитории LF окончания строк для `.sh` файлов (есть `.gitattributes`) или пересоберите образ после нормализации.
 
