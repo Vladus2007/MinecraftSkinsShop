@@ -38,7 +38,9 @@ builder.Services.AddCors(options =>
     });
 });
 // HttpClient для BTCConnection. api url храните в конфиге (appsettings.json)
-var btcApiUrl = builder.Configuration.GetValue<string>("BtcApi:Url") ?? "https://rest.coinapi.io/v1/exchangerate/BTC/USD?apikey=5528c02e-055c-45c1-ac43-fe57500a6b3b";
+// HttpClient for BTCConnection: API URL and key must come from configuration or environment variables.
+// Do NOT hardcode API keys in source. Set `BtcApi:Url` and `BtcApi:Key` in secrets or environment.
+var btcApiUrl = builder.Configuration.GetValue<string>("BtcApi:Url");
 builder.Services.AddAuthentication("MockShceme").
     AddScheme<AuthenticationSchemeOptions, MockAuthoriseHandler>("MockShceme", null);
 builder.Services.AddAuthorization();
