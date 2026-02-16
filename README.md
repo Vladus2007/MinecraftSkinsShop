@@ -87,15 +87,5 @@ npm run preview    # или serve через nginx в Docker
 - `docker-compose.yaml` — конфигурация сервисов
 - `frontend/nginx/default.conf` — nginx конфигурация для frontend
 
-## Полезные заметки
-- Не храните реальные пароли и API-ключи в `appsettings.json` — используйте `.env` и `appsettings.json.example`.
-- Для разработки включена `MockAuthoriseHandler` — проверяйте `Presentation/Program.cs` для схемы аутентификации.
-- Seed-данные находятся в `Infrastructure/SeedData/SeedData.cs` и используются для инициализации БД при запуске с InMemory/SQLite.
 
----
-
-Если хотите, я могу:
-- добавить в README раздел с примерами запросов (curl) к API,
-- добавить описание DTO и примеры ответов,
-- или создать `appsettings.json.example` и убрать реальные секреты из `appsettings.json`.
 
