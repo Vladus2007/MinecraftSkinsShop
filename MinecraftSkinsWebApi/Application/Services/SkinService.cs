@@ -38,8 +38,8 @@ namespace Application.Services
 
             foreach (var skin in skins)
             {
-                if (skin.IsAvailable)
-                {
+                
+                
                     var dto = _mapper.Map<SkinResponse>(skin);
 
                     // Calculate price
@@ -48,7 +48,7 @@ namespace Application.Services
                     // Update DTO with calculated price
                     var withPrice = dto with { FinalPriceUsd = finalPrice };
                     responses.Add(withPrice);
-                }
+                
             }
 
             return responses;
