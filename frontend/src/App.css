@@ -378,3 +378,200 @@ body {
     grid-template-columns: 1fr;
   }
 }
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.btc-price-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+.btc-icon {
+  font-size: 1.2rem;
+}
+
+.btc-value {
+  font-size: 1rem;
+}
+
+.price-values {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.price-value-usd {
+  font-weight: bold;
+  color: #2ecc71;
+}
+
+.price-value-btc {
+  font-size: 0.8rem;
+  color: #f39c12;
+}
+
+.purchase-meta {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.purchase-amount-usd {
+  font-weight: bold;
+  color: #2ecc71;
+}
+
+.purchase-amount-btc {
+  color: #f39c12;
+  font-size: 0.9rem;
+}
+
+.purchase-rate {
+  font-size: 0.8rem;
+  color: #95a5a6;
+  margin-top: 4px;
+}
+
+.status-message.warning {
+  background-color: #fff3cd;
+  color: #856404;
+  border-left: 4px solid #ffc107;
+}
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+}
+
+.rates-container {
+  display: flex;
+  gap: 16px;
+}
+
+.rate-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-weight: 600;
+}
+
+.rate-icon {
+  font-size: 1.1rem;
+}
+
+.rate-value {
+  font-size: 0.95rem;
+}
+
+.currency-selector {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 24px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.currency-label {
+  color: #6c757d;
+  font-size: 0.9rem;
+}
+
+.currency-btn {
+  padding: 6px 16px;
+  border: 1px solid #dee2e6;
+  background: white;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+
+.currency-btn:hover {
+  background: #e9ecef;
+}
+
+.currency-btn.active {
+  background: #667eea;
+  color: white;
+  border-color: #667eea;
+}
+
+.price-values {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.price-value-usd {
+  font-weight: bold;
+  color: #2ecc71;
+}
+
+.price-value-btc {
+  font-size: 0.8rem;
+  color: #f39c12;
+}
+
+.price-value-original {
+  font-size: 0.7rem;
+  color: #95a5a6;
+}
+
+.purchase-meta {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.purchase-amount-usd {
+  font-weight: bold;
+  color: #2ecc71;
+}
+
+.purchase-amount-eur {
+  color: #007bff;
+  font-weight: 500;
+}
+
+.purchase-amount-btc {
+  color: #f39c12;
+  font-size: 0.9rem;
+}
+
+.purchase-rates {
+  display: flex;
+  gap: 16px;
+  margin-top: 4px;
+}
+
+.purchase-rate {
+  font-size: 0.8rem;
+  color: #95a5a6;
+}
+
+.status-message.warning {
+  background-color: #fff3cd;
+  color: #856404;
+  border-left: 4px solid #ffc107;
+}

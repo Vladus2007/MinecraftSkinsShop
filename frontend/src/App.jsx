@@ -8,6 +8,27 @@ function App() {
   const [statusMsg, setStatusMsg] = useState('');
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState('shop');
+  
+  // Новые состояния для курсов валют
+  const [btcPrice, setBtcPrice] = useState(null);
+  const [eurRate, setEurRate] = useState(null);
+
+  // Функция для загрузки курсов
+  const loadRates = async () => {
+    try {
+      // Курс биткоина
+      const btcResponse = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
+      const btcData = await btcResponse.json();
+      setBtcPrice(btcData.bitcoin.usd);
+
+      // Курс евро
+      const eurResponse = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+      const eurData = await eurResponse.json();
+      setEurRate(eurData.rates.EUR);
+    } catch (error) {
+      console.error('Error loading rates:', error);
+    }
+  };
 
   const loadSkins = async () => {
     try {
@@ -54,6 +75,11 @@ function App() {
   useEffect(() => {
     loadSkins();
     loadHistory();
+    loadRates(); // Загружаем курсы при старте
+    
+    // Обновляем курсы каждую минуту
+    const interval = setInterval(loadRates, 60000);
+    return () => clearInterval(interval);
   }, []);
 
   const formatDate = (dateString) => {
@@ -72,6 +98,17 @@ function App() {
       <header className="header">
         <div className="header-content">
           <h1 className="logo">🎮 SkinShop</h1>
+          {/* Добавленная плашка с курсами */}
+          <div className="rates-banner">
+            {btcPrice && eurRate ? (
+              <>
+                <span className="rate-item">₿ ${btcPrice.toLocaleString()}</span>
+                <span className="rate-item">€ {eurRate.toFixed(4)}</span>
+              </>
+            ) : (
+              <span className="rate-item">Loading rates...</span>
+            )}
+          </div>
         </div>
       </header>
 
